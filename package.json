@@ -1,5 +1,5 @@
 {
-  "name": "grunt-cmd-transport",
+  "name": "grunt-cmd-transport-wnd",
   "description": "Transport javascript into cmd.",
   "version": "0.5.1",
   "homepage": "https://github.com/spmjs/grunt-cmd-transport",
