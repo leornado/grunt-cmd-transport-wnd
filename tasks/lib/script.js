@@ -15,6 +15,26 @@ exports.init = function(grunt) {
   function jsParser(fileObj, options) {
     grunt.log.verbose.writeln('Transport ' + fileObj.src + ' -> ' + fileObj.dest);
 
+    var regexpQuote = function (str) {
+      return (str + '').replace(/([.?*+\^$\[\]\\(){}|\-])/g, '\\$1');
+    };
+    var getRev = function (dep) {
+      var regex = new RegExp('[0-9a-fA-F]{8}\\.' + regexpQuote(dep) + '$');
+      options.paths.forEach(function (path) {
+        var files = grunt.file.expand({
+          filter: 'isFile',
+          cwd   : path
+        }, ['*.js']);
+        if (files)
+          files = files.filter(function (f) {
+            return f.match(regex);
+          });
+        if (files && files.length > 0) {
+          dep = files[0];
+        }
+      });
+      return dep;
+    };
 
     // cache every filepath content to generate hash
     //
@@ -43,6 +63,7 @@ exports.init = function(grunt) {
         id: unixy(options.idleading) + getId(file),
         dependencies: getDeps(file),
         require: function(v) {
+          v = getRev(v);
           // ignore when deps is specified by developer
           return file.depsSpecified ? v : iduri.parseAlias(options, v);
         }
@@ -85,6 +106,7 @@ exports.init = function(grunt) {
         if (typeof dep !== 'string') {
           dep = fn ? fn(dep) : dep.id;
         }
+        dep = getRev(dep);
         return dep.replace(/\.js$/, '');
       });
     }
