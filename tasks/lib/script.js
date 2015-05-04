@@ -19,18 +19,28 @@ exports.init = function(grunt) {
       return (str + '').replace(/([.?*+\^$\[\]\\(){}|\-])/g, '\\$1');
     };
     var getRev = function (dep) {
-      var regex = new RegExp('[0-9a-fA-F]{8}\\.' + regexpQuote(dep) + '$');
-      options.paths.forEach(function (path) {
+      options.paths.forEach(function (p) {
+        var extname = path.extname(dep);
+        var dirname = path.dirname(dep, extname);
+        var basename = path.basename(dep, extname);
+        var searchString = path.join(p, dirname, basename + '.*' + extname);
+        var prefixSearchString = path.join(p, dirname, '*.' + basename + extname);
+
+        var hex = '[0-9a-fA-F]+';
+        var regPrefix = '(' + hex + '\\.' + regexpQuote(basename) + regexpQuote(extname) + ')';
+        var regSuffix = '(' + regexpQuote(basename) + '\\.' + hex + regexpQuote(extname) + ')';
+        var revvedRx = new RegExp(regPrefix + '|' + regSuffix);
+
         var files = grunt.file.expand({
-          filter: 'isFile',
-          cwd   : path
-        }, ['*.js']);
+          filter: 'isFile'
+        }, [searchString, prefixSearchString]);
         if (files)
           files = files.filter(function (f) {
-            return f.match(regex);
+            return f.match(revvedRx);
           });
+
         if (files && files.length > 0) {
-          dep = files[0];
+          dep = dirname + '/' + path.basename(files[0]);
         }
       });
       return dep;
