@@ -1,6 +1,75 @@
-# grunt-cmd-transport
+# grunt-cmd-transport-wnd
 
 > Transport javascript into cmd.
+
+This plugin modified from grunt-cmd-transport  `~0.5.1` for transport revved js files, it's 4 personal test, not for common use.
+
+1st seajs file:
+console/js/console.js
+
+```js
+define(function (require) {
+
+  var app = require('console/js/app.js');
+  console.log('========');
+
+});
+```
+2nd seajs file:
+console/js/app.js
+
+```js
+define(function (require) {
+
+  console.log('-------');
+
+});
+```
+
+GruntFile.js like
+
+```js
+transport: {
+  dist: {
+    options: {
+      paths: ['<%= config.dist %>']
+    },
+    files  : [
+      {
+        expand: true,
+        cwd   : '<%= config.dist %>',
+        src   : [
+          '*/js/*.js'
+        ],
+        dest  : '<%= config.dist %>'
+      }
+    ]
+  }
+}
+...
+grunt.registerTask('build', [
+  'clean:dist',
+  'useminPrepare',
+  'concurrent:dist',
+  'autoprefixer',
+  'concat',
+  'cssmin',
+  'uglify',
+  'copy:dist',
+  'modernizr',
+  'rev',
+  'transport',
+  'usemin',
+  'htmlmin'
+]);
+``` 
+
+then target file will transport to:
+
+1st seajs file:
+```js
+"use strict";define("console/js/d5c52cbc.console",["console/js/0a46e031.app"],function(a){a("console/js/0a46e031.app.js");console.log("========")});
+```
 
 ## Getting Started
 
