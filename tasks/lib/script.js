@@ -25,17 +25,19 @@ exports.init = function(grunt) {
         var extname = path.extname(dep) || '.js';
         var dirname = path.dirname(dep, extname);
         var basename = path.basename(dep, extname);
-        var searchString = path.join(p, dirname, basename + '.*' + extname);
+        var searchString = path.join(p, dirname, basename + extname);
+        var suffixSearchString = path.join(p, dirname, basename + '.*' + extname);
         var prefixSearchString = path.join(p, dirname, '*.' + basename + extname);
 
         var hex = '[0-9a-fA-F]+';
+        var reg = '(' + regexpQuote(basename) + regexpQuote(extname) + ')';
         var regPrefix = '(' + hex + '\\.' + regexpQuote(basename) + regexpQuote(extname) + ')';
         var regSuffix = '(' + regexpQuote(basename) + '\\.' + hex + regexpQuote(extname) + ')';
-        var revvedRx = new RegExp(regPrefix + '|' + regSuffix);
+        var revvedRx = new RegExp(reg + '|' + regPrefix + '|' + regSuffix);
 
         var files = grunt.file.expand({
           filter: 'isFile'
-        }, [searchString, prefixSearchString]);
+        }, [searchString, suffixSearchString, prefixSearchString]);
         if (files) {
           files = files.filter(function (f) {
             return f.match(revvedRx);
@@ -80,6 +82,8 @@ exports.init = function(grunt) {
         dependencies: getDeps(file),
         require: function(v) {
           v = getRev(v).freplace;
+          if (options.usemin === true)
+            v = (options.useminPrefix || '') + v;
           // ignore when deps is specified by developer
           return file.depsSpecified ? v : iduri.parseAlias(options, v);
         }
@@ -114,7 +118,8 @@ exports.init = function(grunt) {
     }
 
     function getId(file) {
-      return file.id || unixy(fileObj.name.replace(/\.js$/, ''));
+      var id = file.id || unixy(fileObj.name.replace(/\.js$/, ''));
+      return (options.usemin === true ? options.useminPrefix : '') + id;
     }
 
     function getDeps(file, fn) {
@@ -123,6 +128,8 @@ exports.init = function(grunt) {
           dep = fn ? fn(dep) : dep.id;
         }
         dep = getRev(dep).freplace;
+        if (options.usemin === true)
+          dep = (options.useminPrefix || '') + dep;
         return dep.replace(/\.js$/, '');
       });
     }

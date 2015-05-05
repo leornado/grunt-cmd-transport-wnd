@@ -27,9 +27,39 @@ define(function (require) {
 ```
 
 GruntFile.js like
+also see * [`grunt-usemin-wnd`](https://www.npmjs.com/package/grunt-usemin-wnd)
 
 ```js
+...
+usemin: { // from grunt-usemin-wnd
+  options: {
+    assetsDirs       : [
+      '<%= config.dist %>/console/*',
+      '<%= config.dist %>/console',
+      '<%= config.dist %>'
+    ],
+    patterns         : {
+      js: [
+        [
+          /['"]usemin:([^'"]*)["']/gm,
+          'Replacing seajs require parts',
+          function (m) { // add ext '.js'
+            return path.extname(m) == '.js' ? m : m + '.js';
+          }, ,
+          function (m) { // cut prefix 'usemin:'
+            return m.replace(/usemin:/, '');
+          }
+        ]
+      ]
+    }
+  },
+  js     : ['<%= config.dist %>/*/js/*.js']
+},
 transport: {
+  options: {
+    usemin      : true,
+    useminPrefix: 'usemin:' // see usemin.
+  },
   dist: {
     options: {
       paths: ['<%= config.dist %>']
@@ -49,20 +79,24 @@ transport: {
 ...
 grunt.registerTask('build', [
   'clean:dist',
+  'includereplace:dist',
   'useminPrepare',
   'concurrent:dist',
+  'svgmin',
   'autoprefixer',
   'concat',
-  'cssmin',
-  'uglify',
   'copy:dist',
-  'modernizr',
-  'rev',
+  'cssmin',
+  'imagemin',
   'transport',
+  'uglify',
+  'rev',
   'usemin',
+  'replace',
   'htmlmin'
 ]);
 ``` 
+[cause of usemin replace transported js at last, so the revved file hash is not equals to the real value of file content](#)
 
 then target file will transport to:
 
