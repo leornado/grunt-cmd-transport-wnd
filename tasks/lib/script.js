@@ -79,7 +79,7 @@ exports.init = function(grunt) {
         id: unixy(options.idleading) + getId(file),
         dependencies: getDeps(file),
         require: function(v) {
-          v = getRev(v);
+          v = getRev(v).freplace;
           // ignore when deps is specified by developer
           return file.depsSpecified ? v : iduri.parseAlias(options, v);
         }
@@ -122,7 +122,7 @@ exports.init = function(grunt) {
         if (typeof dep !== 'string') {
           dep = fn ? fn(dep) : dep.id;
         }
-        dep = getRev(dep);
+        dep = getRev(dep).freplace;
         return dep.replace(/\.js$/, '');
       });
     }
