@@ -19,8 +19,10 @@ exports.init = function(grunt) {
       return (str + '').replace(/([.?*+\^$\[\]\\(){}|\-])/g, '\\$1');
     };
     var getRev = function (dep) {
-      options.paths.forEach(function (p) {
-        var extname = path.extname(dep);
+      var fpath, fbase, freplace;
+      for (var i = 0; i < options.paths.length; i++) {
+        var p = options.paths[i];
+        var extname = path.extname(dep) || '.js';
         var dirname = path.dirname(dep, extname);
         var basename = path.basename(dep, extname);
         var searchString = path.join(p, dirname, basename + '.*' + extname);
@@ -34,16 +36,20 @@ exports.init = function(grunt) {
         var files = grunt.file.expand({
           filter: 'isFile'
         }, [searchString, prefixSearchString]);
-        if (files)
+        if (files) {
           files = files.filter(function (f) {
             return f.match(revvedRx);
           });
+        }
 
         if (files && files.length > 0) {
-          dep = dirname + '/' + path.basename(files[0]);
+          fpath = files[0];
+          freplace = dirname + '/' + path.basename(fpath);
+          fbase = p;
+          break;
         }
-      });
-      return dep;
+      }
+      return {freplace: freplace, fpath: fpath, fbase: fbase};
     };
 
     // cache every filepath content to generate hash
@@ -245,7 +251,12 @@ exports.init = function(grunt) {
       var file = getFileInfo(fpath);
 
       if (!file) {
-        return [{id: id}];
+        var rev = getRev(fpath);
+        fpath = rev.fpath;
+        fbase = rev.fbase;
+        file = getFileInfo(fpath);
+        if (!file)
+          return [{id: id}];
       }
 
       // don't parse no javascript dependencies
