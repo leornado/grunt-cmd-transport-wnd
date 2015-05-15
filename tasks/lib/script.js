@@ -73,21 +73,39 @@ exports.init = function(grunt) {
 
     if (!file) return;
 
-    var data, filepath;
-    if (!options.hash) {
-
-      // create original file, xxx.js
-      data = ast.modify(file.contents, {
-        id: unixy(options.idleading) + getId(file),
-        dependencies: getDeps(file),
-        require: function(v) {
+    var replaceRequire = function(v) {
           v = getRev(v).freplace;
           if (options.usemin === true)
             v = (options.useminPrefix || '') + v;
           // ignore when deps is specified by developer
           return file.depsSpecified ? v : iduri.parseAlias(options, v);
+    };
+
+    var data, filepath;
+    if (!options.hash) {
+      var cfgs = {
+        id          : unixy(options.idleading) + getId(file),
+        dependencies: getDeps(file),
+        require     : replaceRequire,
+        async       : replaceRequire
+      };
+
+      if (options.customFns) {
+        for (var i = 0; i < options.customFns.length; i++) {
+          var cr = options.customFns[i];
+          cfgs[cr] = replaceRequire;
         }
-      }).print_to_string(options.uglify);
+      }
+
+      if (options.customProps) {
+        for (var i = 0; i < options.customProps.length; i++) {
+          var cp = options.customProps[i];
+          cfgs[cp] = replaceRequire;
+        }
+      }
+
+      // create original file, xxx.js
+      data = ast.modify(file.contents, cfgs, options).print_to_string(options.uglify);
       filepath = fileObj.dest;
       writeFile(data, filepath);
     } else {
