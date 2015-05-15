@@ -1,8 +1,8 @@
 
 exports.init = function(grunt) {
-  var iduri = require('cmd-util').iduri;
+  var iduri = require('cmd-util-wnd').iduri;
   var format = require('util').format;
-  var css = require('cmd-util').css;
+  var css = require('cmd-util-wnd').css;
   var md5 = require('./util').md5;
   var join = require('path').join;
   var dirname = require('path').dirname;

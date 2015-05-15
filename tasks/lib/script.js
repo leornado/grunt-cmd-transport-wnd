@@ -2,8 +2,8 @@ exports.init = function(grunt) {
 
   var path = require('path');
   var extname = path.extname;
-  var ast = require('cmd-util').ast;
-  var iduri = require('cmd-util').iduri;
+  var ast = require('cmd-util-wnd').ast;
+  var iduri = require('cmd-util-wnd').iduri;
   var relative = require('relative');
   var md5 = require('./util').md5;
   var _ = grunt.util._;

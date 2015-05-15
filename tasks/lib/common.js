@@ -1,7 +1,7 @@
 exports.init = function(grunt, options) {
   var extname = require('path').extname;
   var format = require('util').format;
-  var ast = require('cmd-util').ast;
+  var ast = require('cmd-util-wnd').ast;
   var md5 = require('./util').md5;
   var type = options.type;
   var factoryParser = options.factoryParser;
