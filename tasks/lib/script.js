@@ -51,7 +51,7 @@ exports.init = function(grunt) {
           break;
         }
       }
-      return {freplace: freplace, fpath: fpath, fbase: fbase};
+      return {freplace: freplace || dep, fpath: fpath, fbase: fbase};
     };
 
     // cache every filepath content to generate hash
