@@ -104,6 +104,13 @@ exports.init = function(grunt) {
         }
       }
 
+      if (options.customKeys) {
+        for (var i = 0; i < options.customKeys.length; i++) {
+          var ck = options.customKeys[i];
+          cfgs[ck] = replaceRequire;
+        }
+      }
+
       // create original file, xxx.js
       data = ast.modify(file.contents, cfgs, options).print_to_string(options.uglify);
       filepath = fileObj.dest;
