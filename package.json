@@ -1,7 +1,7 @@
 {
   "name": "grunt-cmd-transport-wnd",
   "description": "Transport javascript into cmd.",
-  "version": "1.5.9",
+  "version": "1.5.10",
   "homepage": "https://github.com/spmjs/grunt-cmd-transport",
   "author": {
     "name": "leornado",
@@ -41,7 +41,8 @@
     "grunt-contrib-clean": "~0.4.0",
     "grunt-mocha-test": "~0.4.0",
     "should": "~1.2.2",
-    "grunt-cli": "~0.1.9"
+    "grunt-cli": "~0.1.9",
+    "grunt": "^0.4.5"
   },
   "keywords": [
     "gruntplugin"

@@ -335,6 +335,7 @@ exports.init = function(grunt) {
         return fileCache[path];
       }
 
+      grunt.log.debug('--------', path);
       if (!grunt.file.exists(path)) return;
       var astCache, deps, contents = grunt.file.read(path);
 
